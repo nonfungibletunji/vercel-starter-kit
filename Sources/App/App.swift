@@ -1,9 +1,18 @@
+import Vapor
 import Vercel
 
 @main
-struct App: RequestHandler {
+struct App {
+    static func main() async throws {
+        let app = try await Application.make()
+        //try app.middleware.use(FileMiddleware(bundle: .module))
 
-    func onRequest(_ req: Request) async throws -> Response {
-        return .status(.ok).send("Hello, My Swift")
+        addRoutes(to: app)
+
+        #if DEBUG
+            app.lifecycle.use(BrowserSyncHandler())
+        #endif
+
+        try await app.execute()
     }
 }
